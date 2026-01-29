@@ -1,84 +1,92 @@
 /* ===== Global ===== */
 * {
   box-sizing: border-box;
-  text-align: center;   /* Center all text */
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  font-family: 'Courier New', monospace;
-  margin: 0;
-  padding: 0;
   min-height: 100vh;
-
-  /* Background gradient */
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  background: linear-gradient(135deg, #667eea, #764ba2); /* professional gradient */
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px;
 }
 
 /* ===== Container ===== */
 .container {
   width: 100%;
-  max-width: 650px;
+  max-width: 700px;
   padding: 20px;
 }
 
-/* ===== Card look ===== */
+/* ===== Card Style ===== */
 .card {
-  background: rgba(0, 0, 0, 0.85);
-  padding: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 35px 30px;
   border-radius: 15px;
-
-  /* Decoration */
-  box-shadow: 0 10px 30px rgba(0, 255, 144, 0.25);
-  border: 1px solid rgba(0, 255, 144, 0.4);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-/* Headings */
+/* ===== Headings ===== */
 h1 {
-  margin-bottom: 5px;
-  color: #00ff90;
-  text-shadow: 0 0 5px #00ff90, 0 0 10px #00ff90;
+  margin-bottom: 10px;
+  font-size: 32px;
+  color: #222;
 }
 
 h2 {
-  margin-bottom: 10px;
-  color: #00ff90;
+  margin-bottom: 15px;
+  font-size: 24px;
+  color: #444;
 }
 
 /* Subtitle / small text */
 .subtitle {
-  color: #88ffbb;
-  margin-bottom: 25px;
-  font-size: 15px;
+  color: #555;
+  margin-bottom: 30px;
+  font-size: 16px;
 }
 
 /* Labels */
 label {
-  font-weight: bold;
+  font-weight: 600;
   display: block;
   margin-top: 15px;
-  color: #00ff90;
+  margin-bottom: 5px;
+  color: #333;
+  font-size: 14px;
+  text-align: left;
 }
 
 /* Inputs & textarea */
 textarea,
 input {
   width: 100%;
-  margin-top: 8px;
+  margin-top: 5px;
   padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #00ff90;
-  background: #001a1a;
-  color: #00ff90;
+  border-radius: 10px;
+  border: 1px solid #ccc;
   font-size: 14px;
-  font-family: 'Courier New', monospace;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: #f9f9f9;
+}
+
+textarea:focus,
+input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+  outline: none;
 }
 
 /* Textarea height */
 textarea {
-  height: 150px;
+  height: 160px;
   resize: vertical;
 }
 
@@ -87,38 +95,34 @@ button,
 .btn {
   margin-top: 20px;
   width: 100%;
-  padding: 12px;
-
-  background: linear-gradient(135deg, #00ff90, #00cc77);
-  color: black;
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
   border: none;
   border-radius: 25px;
-
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
-
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
 }
 
 button:hover,
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 255, 144, 0.5);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
 /* Output JSON box */
 .output {
   margin-top: 25px;
-  padding: 15px;
-  border-radius: 10px;
-
-  background: #111;
-  color: #00ff90;
-
-  font-size: 13px;
-  overflow-x: auto;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f4f4f4;
+  color: #333;
+  font-size: 14px;
   text-align: left;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+  overflow-x: auto;
 }
 
 /* Paste content page */
@@ -126,20 +130,20 @@ button:hover,
   white-space: pre-wrap;
   word-break: break-word;
   font-size: 15px;
-  background: #001a1a;
+  background: #f1f1f1;
   padding: 20px;
   border-radius: 12px;
-  color: #00ff90;
-  box-shadow: 0 5px 20px rgba(0, 255, 144, 0.3);
+  color: #222;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 /* Links */
 .back-link {
   display: block;
   margin-top: 20px;
-  color: #00ff90;
+  color: #667eea;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .back-link:hover {
@@ -150,6 +154,7 @@ button:hover,
 .error-text {
   font-size: 18px;
   color: #ff5555;
+  font-weight: 600;
 }
 
 /* Center alignment helper */
