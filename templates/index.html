@@ -1,52 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pastebin Lite</title>
   <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
-<h2>Create Paste</h2>
-<div class="container">
+  <div class="container">
     <h1>📝 Pastebin Lite</h1>
     <p class="subtitle">Create and share text easily</p>
 
     <form id="pasteForm" class="card">
-      <label>Paste Content</label>
-      <textarea id="c" placeholder="Write or paste your text here..." required></textarea><br>
-      <br>
-      <label>TTL (seconds)</label>
-      <input type="number" id="ttl_seconds" placeholder="Eg: 60 (optional)"><br><br>
-      <label>Max Views</label>
-      <input type="number" id="max_views" placeholder="Eg: 5 (optional)"><br><br>
+      <label for="content">Paste Content</label>
+      <textarea id="content" placeholder="Write or paste your text here..." required></textarea>
+
+      <label for="ttl_seconds">TTL (seconds)</label>
+      <input type="number" id="ttl_seconds" placeholder="Eg: 60 (optional)">
+
+      <label for="max_views">Max Views</label>
+      <input type="number" id="max_views" placeholder="Eg: 5 (optional)">
 
       <button type="submit">Create Paste</button>
     </form>
 
-    <pre id="result" class="output">SHAREABLE LINK READY</pre>
+    <pre id="result" class="output">Your shareable link will appear here</pre>
   </div>
 
+  <script>
+  document.getElementById('pasteForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-<script>
-document.getElementById('pasteForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+      const content = document.getElementById('content').value;
+      const ttl_seconds = document.getElementById('ttl_seconds').value;
+      const max_views = document.getElementById('max_views').value;
 
-    const content = document.getElementById('content').value;
-    const ttl_seconds = document.getElementById('ttl_seconds').value;
-    const max_views = document.getElementById('max_views').value;
+      const payload = { content };
+      if(ttl_seconds) payload.ttl_seconds = parseInt(ttl_seconds);
+      if(max_views) payload.max_views = parseInt(max_views);
 
-    const payload = { content };
-    if(ttl_seconds) payload.ttl_seconds = parseInt(ttl_seconds);
-    if(max_views) payload.max_views = parseInt(max_views);
+      try {
+        const res = await fetch('/api/pastes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-    const res = await fetch('/api/pastes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-    document.getElementById('result').innerText = JSON.stringify(data, null, 2);
-});
-</script>
+        const data = await res.json();
+        document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+      } catch(err) {
+        document.getElementById('result').innerText = 'Error creating paste. Try again!';
+      }
+  });
+  </script>
 </body>
 </html>
