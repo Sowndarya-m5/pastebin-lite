@@ -6,14 +6,25 @@
 </head>
 <body>
 <h2>Create Paste</h2>
-<form id="pasteForm">
-  <textarea id="content" required></textarea><br>
-  <input type="number" id="ttl_seconds" placeholder="TTL (seconds)"><br><br>
-  <input type="number" id="max_views" placeholder="Max views"><br><br>
-  <button type="submit">Create</button><br><br>
-</form>
+<div class="container">
+    <h1>📝 Pastebin Lite</h1>
+    <p class="subtitle">Create and share text easily</p>
 
-<div id="result"></div>
+    <form id="pasteForm" class="card">
+      <label>Paste Content</label>
+      <textarea id="c" placeholder="Write or paste your text here..." required></textarea><br>
+      <br>
+      <label>TTL (seconds)</label>
+      <input type="number" id="ttl_seconds" placeholder="Eg: 60 (optional)"><br><br>
+      <label>Max Views</label>
+      <input type="number" id="max_views" placeholder="Eg: 5 (optional)"><br><br>
+
+      <button type="submit">Create Paste</button>
+    </form>
+
+    <pre id="result" class="output">SHAREABLE LINK READY</pre>
+  </div>
+
 
 <script>
 document.getElementById('pasteForm').addEventListener('submit', async (e) => {
