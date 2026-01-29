@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pastebin Lite</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<h2>Create Paste</h2>
+
+<form method="post" action="/api/pastes">
+<textarea name="content" required></textarea><br>
+<input type="number" name="ttl_seconds" placeholder="TTL (seconds)">
+<input type="number" name="max_views" placeholder="Max views">
+<button>Create</button>
+</form>
+
+<p>Use API clients (Postman / fetch) for full experience.</p>
+</body>
+</html>
