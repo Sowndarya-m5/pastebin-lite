@@ -6,14 +6,36 @@
 </head>
 <body>
 <h2>Create Paste</h2>
-
-<form method="post" action="/api/pastes">
-<textarea name="content" required></textarea><br>
-<input type="number" name="ttl_seconds" placeholder="TTL (seconds)">
-<input type="number" name="max_views" placeholder="Max views">
-<button>Create</button>
+<form id="pasteForm">
+  <textarea id="content" required></textarea><br>
+  <input type="number" id="ttl_seconds" placeholder="TTL (seconds)"><br><br>
+  <input type="number" id="max_views" placeholder="Max views"><br><br>
+  <button type="submit">Create</button><br><br>
 </form>
 
-<p>Use API clients (Postman / fetch) for full experience.</p>
+<div id="result"></div>
+
+<script>
+document.getElementById('pasteForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const content = document.getElementById('content').value;
+    const ttl_seconds = document.getElementById('ttl_seconds').value;
+    const max_views = document.getElementById('max_views').value;
+
+    const payload = { content };
+    if(ttl_seconds) payload.ttl_seconds = parseInt(ttl_seconds);
+    if(max_views) payload.max_views = parseInt(max_views);
+
+    const res = await fetch('/api/pastes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+});
+</script>
 </body>
 </html>

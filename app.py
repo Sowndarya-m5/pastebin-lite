@@ -10,6 +10,7 @@ TEST_MODE = os.environ.get("TEST_MODE") == "1"
 
 
 def now_ms():
+    """Return current time in ms; supports TEST_MODE header override."""
     if TEST_MODE:
         header = request.headers.get("x-test-now-ms")
         if header:
@@ -18,6 +19,7 @@ def now_ms():
 
 
 def is_expired(row):
+    """Check if a paste is expired (TTL or max views)."""
     if row["expires_at"] is not None and now_ms() >= row["expires_at"]:
         return True
     if row["max_views"] is not None and row["view_count"] >= row["max_views"]:
@@ -37,19 +39,44 @@ def healthz():
 
 @app.route("/api/pastes", methods=["POST"])
 def create_paste():
-    data = request.get_json()
+    """
+    Create a new paste.
+    Supports both JSON API and regular HTML form submission.
+    """
+    # Try JSON first
+    data = request.get_json(silent=True)
 
-    if not data or not data.get("content") or not isinstance(data["content"], str):
-        return jsonify({"error": "Invalid content"}), 400
+    # If JSON not sent, fallback to form data
+    if not data:
+        data = request.form
 
+    content = data.get("content")
     ttl = data.get("ttl_seconds")
     max_views = data.get("max_views")
 
-    if ttl is not None and (not isinstance(ttl, int) or ttl < 1):
-        return jsonify({"error": "Invalid ttl_seconds"}), 400
+    if not content or not isinstance(content, str):
+        return jsonify({"error": "Invalid content"}), 400
 
-    if max_views is not None and (not isinstance(max_views, int) or max_views < 1):
-        return jsonify({"error": "Invalid max_views"}), 400
+    # Convert TTL and max_views to integers if present
+    if ttl:
+        try:
+            ttl = int(ttl)
+            if ttl < 1:
+                raise ValueError
+        except ValueError:
+            return jsonify({"error": "Invalid ttl_seconds"}), 400
+    else:
+        ttl = None
+
+    if max_views:
+        try:
+            max_views = int(max_views)
+            if max_views < 1:
+                raise ValueError
+        except ValueError:
+            return jsonify({"error": "Invalid max_views"}), 400
+    else:
+        max_views = None
 
     paste_id = str(uuid.uuid4())
     created_at = now_ms()
@@ -58,10 +85,13 @@ def create_paste():
     conn = get_conn()
     cur = conn.cursor()
 
-    cur.execute("""
+    cur.execute(
+        """
         INSERT INTO pastes (id, content, created_at, expires_at, max_views)
         VALUES (%s, %s, %s, %s, %s)
-    """, (paste_id, data["content"], created_at, expires_at, max_views))
+        """,
+        (paste_id, content, created_at, expires_at, max_views),
+    )
 
     conn.commit()
     cur.close()
@@ -69,10 +99,16 @@ def create_paste():
 
     base_url = request.host_url.rstrip("/")
 
-    return jsonify({
+    response = {
         "id": paste_id,
         "url": f"{base_url}/p/{paste_id}"
-    })
+    }
+
+    # If form submission (HTML), render the URL; else return JSON
+    if not request.is_json:
+        return render_template("view_paste.html", content=f"Paste created! URL: {response['url']}")
+
+    return jsonify(response)
 
 
 @app.route("/api/pastes/<paste_id>")
@@ -92,15 +128,10 @@ def fetch_paste_api(paste_id):
     if is_expired(paste):
         return jsonify({"error": "Not found"}), 404
 
-    cur.execute("""
-        UPDATE pastes SET view_count = view_count + 1 WHERE id=%s
-    """, (paste_id,))
+    cur.execute("UPDATE pastes SET view_count = view_count + 1 WHERE id=%s", (paste_id,))
     conn.commit()
 
-    remaining_views = (
-        None if paste["max_views"] is None
-        else max(paste["max_views"] - (paste["view_count"] + 1), 0)
-    )
+    remaining_views = None if paste["max_views"] is None else max(paste["max_views"] - (paste["view_count"] + 1), 0)
 
     response = {
         "content": paste["content"],
@@ -133,9 +164,7 @@ def view_paste(paste_id):
     if is_expired(paste):
         return render_template("error.html"), 404
 
-    cur.execute("""
-        UPDATE pastes SET view_count = view_count + 1 WHERE id=%s
-    """, (paste_id,))
+    cur.execute("UPDATE pastes SET view_count = view_count + 1 WHERE id=%s", (paste_id,))
     conn.commit()
 
     cur.close()
@@ -146,3 +175,7 @@ def view_paste(paste_id):
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
